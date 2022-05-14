@@ -24,7 +24,26 @@ class MainFrame(wx.Frame):
 class FuncPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent=parent)
+        self.prompt_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.init_sizers()
+
+
         self.SetBackgroundColour("Green")
+
+    def init_sizers(self):
+        self.write_prompt_text("butts")
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(0, 50, 0)
+        vbox.Add(self.prompt_sizer, 0, wx.ALIGN_CENTER)
+        self.SetSizer(vbox)
+
+    def write_prompt_text(self, text: str):
+        self.prompt_sizer.Clear()
+        for char in text:
+            prompt_char = wx.StaticText(self, label=char, style=wx.ALIGN_CENTER)
+            prompt_font = wx.Font(pointSize= 60, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL, underline=False, faceName="", encoding=wx.FONTENCODING_DEFAULT)
+            prompt_char.SetFont(prompt_font)
+            self.prompt_sizer.Add(prompt_char)
 
 
 if __name__=="__main__":
