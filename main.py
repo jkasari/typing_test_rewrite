@@ -20,6 +20,8 @@ class MainFrame(wx.Frame):
         self.init_panel(size)
         self.init_sizer()
         self.func_panel.init_actions()
+        self.func_panel.change_prompt("BUTTS")
+        self.frame_sizer.Layout()
 
     def init_panel(self, size: tuple):
         self.func_panel = FuncPanel(self, size)
@@ -35,6 +37,7 @@ class MainFrame(wx.Frame):
         self.SetSizer(self.frame_sizer)
         self.Fit()
         self.Show()
+
         
 
 
@@ -45,9 +48,9 @@ class FuncPanel(wx.Panel):
         self.init_restart_button()
         self.init_sizers()
 
-
         self.SetBackgroundColour("Green")
 
+        self.test_count = 0
 
     def init_restart_button(self):
         self.restart_button = wx.Button(self, label='', pos=(270, 370), size=(90, 30))
@@ -71,11 +74,16 @@ class FuncPanel(wx.Panel):
         self.parent.action_control("test")
 
     def write_prompt_text(self, text: str):
-        for char in text:
+        for int, char in enumerate(text):
             prompt_char = wx.StaticText(self, label=char, style=wx.ALIGN_CENTER)
-            #prompt_font = wx.Font(pointSize= 60, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL, underline=False, faceName="", encoding=wx.FONTENCODING_DEFAULT)
+            #prompt_font = wx.Font(pointSize= 60, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL)
             #prompt_char.SetFont(prompt_font)
+            if int == self.test_count:
+                prompt_char.SetForegroundColour((255, 0, 0))
             self.prompt_sizer.Add(prompt_char)
+        self.test_count += 1
+        if self.test_count > len(text):
+            self.test_count = 0
 
     def clear_prompt(self):
         for i in reversed(range(len(self.prompt_sizer.GetChildren()))):
