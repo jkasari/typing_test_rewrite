@@ -20,7 +20,7 @@ class MainFrame(wx.Frame):
         self.init_panel(size)
         self.init_sizer()
         self.func_panel.init_actions()
-        self.prompt_string = ""
+        self.prompt_string = " "
         self.action_control("START_GAME")
         self.frame_sizer.Layout()
 
@@ -28,14 +28,16 @@ class MainFrame(wx.Frame):
         self.func_panel = FuncPanel(self, size)
     
     def restart_display(self):
+        self.prompt_string = " "
+        self.func_panel.update_prompt_text()
         self.func_panel.restart_button.Show()
         self.func_panel.input_box.Hide()
 
     def start_game(self):
         self.prompt_string = "Start"
+        self.func_panel.update_prompt_text()
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
-        self.func_panel.update_prompt_text()
 
     # This controls all actions that require a widget to change on the panel.
     def action_control(self, action: str):
