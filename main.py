@@ -21,30 +21,33 @@ class MainFrame(wx.Frame):
         self.init_sizer()
         self.func_panel.init_actions()
         self.prompt_string = ""
-        self.action_control("RESTART_DISPLAY")
+        self.action_control("START_GAME")
         self.frame_sizer.Layout()
 
     def init_panel(self, size: tuple):
         self.func_panel = FuncPanel(self, size)
     
     def restart_display(self):
-        self.func_panel.input_box.Hide()
         self.func_panel.restart_button.Show()
+        self.func_panel.input_box.Hide()
 
     def start_game(self):
+        self.prompt_string = "Start"
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
-        self.func_panel.update_prompt_text(self.prompt_string)
+        self.func_panel.update_prompt_text()
 
     # This controls all actions that require a widget to change on the panel.
     def action_control(self, action: str):
         if action == "RESTART_DISPLAY":
             self.restart_display()
-        if action == "CHECK_INPUT":
-            self.func_panel.update_prompt_text(self.prompt_string)
-        if action == "START_GAME":
-            self.prompt_string = "Start"
+        elif action == "CHECK_INPUT":
+            self.func_panel.update_prompt_text()
+        elif action == "START_GAME":
             self.start_game()
+        elif action == "TEXT_MATCH":
+            self.func_panel.input_box.SetValue('')
+            self.restart_display()
         self.frame_sizer.Layout()
 
     def init_sizer(self):
@@ -93,28 +96,27 @@ class FuncPanel(wx.Panel):
 
     # Tell action control it needs to potentially update the prompt.
     def text_entered(self, e):
-        #self.parent.action_control("CHECK_INPUT")
-        self.parent.action_control("RESTART_DISPLAY")
+        self.parent.action_control("CHECK_INPUT")
 
     # Tell action control to restart the app.
     def restart_pushed(self, e):
         self.parent.action_control("START_GAME")
 
     # Takes a string and displays it as the prompt. Everytime it is called it checks the input box and either color codes the prompt or asks for it to be changed. 
-    def update_prompt_text(self, text: str):
-        if self.prompt_sizer.GetChildren():
+    def update_prompt_text(self):
+        if not self.prompt_sizer.IsEmpty():
             self.clear_prompt()
         input = ""
         if self.input_box.GetValue():
             input = self.input_box.GetValue()
-        if input == text:
-            self.parent.action_control("RESTART_DISPLAY")
+        if input == self.parent.prompt_string:
+            self.parent.action_control("TEXT_MATCH")
         else:
-            self.write_prompt_text(text, input)
+            self.write_prompt_text(input)
 
     # Takes in a string for the prompt and for the input. It then fills the prompt sizer with color coded characters based on which ones match the input string.
-    def write_prompt_text(self, text: str, input: str):
-        for int, char in enumerate(text):
+    def write_prompt_text(self, input: str):
+        for int, char in enumerate(self.parent.prompt_string):
             prompt_char = wx.StaticText(self, label=char, style=wx.ALIGN_CENTER)
             #prompt_font = wx.Font(pointSize= 60, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL)
             #prompt_char.SetFont(prompt_font)
