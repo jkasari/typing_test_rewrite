@@ -28,18 +28,21 @@ class MainFrame(wx.Frame):
     def init_panel(self, size: tuple):
         self.func_panel = FuncPanel(self, size)
     
+    # Displays the restart button and hides the rest of the widgets
     def restart_display(self):
         self.prompt_string = " "
         self.func_panel.update_prompt_text()
         self.func_panel.restart_button.Show()
         self.func_panel.input_box.Hide()
 
+    # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
         self.prompt_string = self.text_dict["START_PROMPT"]
         self.func_panel.update_prompt_text()
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
 
+    # imports all the strings from the json file and puts them into a python dict object.
     def import_json_data(self):
         json_obj = open("text.json")
         content_str = json_obj.read()
@@ -58,6 +61,7 @@ class MainFrame(wx.Frame):
             self.restart_display()
         self.frame_sizer.Layout()
 
+    # Creates the main sizer for the Frame.
     def init_sizer(self):
         self.frame_sizer = wx.BoxSizer(wx.VERTICAL)
         self.frame_sizer.Add(self.func_panel, 1, wx.EXPAND)
@@ -79,14 +83,16 @@ class FuncPanel(wx.Panel):
 
         self.test_count = 0
 
+    #creates the actual restart button
     def init_restart_button(self):
         self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], pos=(270, 370), size=(90, 30))
         self.restart_button.Hide()
 
-    
+    #creats the input box.
     def init_input(self):
         self.input_box = wx.TextCtrl(self, value="", size=(90, 30))
 
+    # Inits the dong show that is the panel sizers. LOOK AT ALL OF THEM
     def init_sizers(self):
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.prompt_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -97,7 +103,7 @@ class FuncPanel(wx.Panel):
         self.main_sizer.Add(self.input_box, 0, wx.ALIGN_CENTER)
         self.SetSizer(self.main_sizer)
   
-
+    # Python was giving me a bug if I inited these in the constructor. Now the parent can init them, I plan on fixing this. 
     def init_actions(self):
         self.Bind(wx.EVT_BUTTON, self.restart_pushed, self.restart_button)
         self.Bind(wx.EVT_TEXT, self.text_entered, self.input_box)
