@@ -1,7 +1,7 @@
-from os import remove
 import wx
 import random
 import time
+import json
 
 
 class App(wx.App):
@@ -17,6 +17,7 @@ class App(wx.App):
 class MainFrame(wx.Frame):
     def __init__(self, parent: wx.App, title: str, pos: tuple, size: tuple):
         super().__init__(parent= parent, title=title, pos=pos, size=size)
+        self.import_json_data()
         self.init_panel(size)
         self.init_sizer()
         self.func_panel.init_actions()
@@ -34,10 +35,15 @@ class MainFrame(wx.Frame):
         self.func_panel.input_box.Hide()
 
     def start_game(self):
-        self.prompt_string = "Start"
+        self.prompt_string = self.text_dict["START_PROMPT"]
         self.func_panel.update_prompt_text()
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
+
+    def import_json_data(self):
+        json_obj = open("text.json")
+        content_str = json_obj.read()
+        self.text_dict = json.loads(content_str)
 
     # This controls all actions that require a widget to change on the panel.
     def action_control(self, action: str):
@@ -74,7 +80,7 @@ class FuncPanel(wx.Panel):
         self.test_count = 0
 
     def init_restart_button(self):
-        self.restart_button = wx.Button(self, label='Restart', pos=(270, 370), size=(90, 30))
+        self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], pos=(270, 370), size=(90, 30))
         self.restart_button.Hide()
 
     
