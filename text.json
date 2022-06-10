@@ -1,5 +1,6 @@
 {
     "RESTART_BUTTON" : "Restart Game",
     "START_PROMPT" : "Go!",
-    "START_BUTTON" : "Start Game"
+    "START_BUTTON" : "Start Game",
+    "PROMPTS" : "`~!@#$%^&*()-_=+[{}]:;'<>,./?|"
 }

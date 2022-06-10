@@ -42,6 +42,13 @@ class MainFrame(wx.Frame):
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
 
+    # Each time the text is matched, this updates the prompt.
+    def generate_new_prompt(self):
+        self.func_panel.input_box.SetValue('')
+        temp = self.text_dict["PROMPTS"]
+        self.prompt_string = random.choice(temp)
+        self.func_panel.update_prompt_text()
+
     # imports all the strings from the json file and puts them into a python dict object.
     def import_json_data(self):
         json_obj = open("text.json")
@@ -57,8 +64,7 @@ class MainFrame(wx.Frame):
         elif action == "START_GAME":
             self.start_game()
         elif action == "TEXT_MATCH":
-            self.func_panel.input_box.SetValue('')
-            self.restart_display()
+            self.generate_new_prompt()
         self.frame_sizer.Layout()
 
     # Creates the main sizer for the Frame.
