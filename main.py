@@ -138,10 +138,13 @@ class FuncPanel(wx.Panel):
     def write_prompt_text(self, input: str):
         for int, char in enumerate(self.parent.prompt_string):
             prompt_char = wx.StaticText(self, label=char, style=wx.ALIGN_CENTER)
-            #prompt_font = wx.Font(pointSize= 60, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL)
-            #prompt_char.SetFont(prompt_font)
-            #if text[char]:
-            #    prompt_char.SetForegroundColour((255, 0, 0))
+            prompt_font = wx.Font(pointSize= 60, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL)
+            prompt_char.SetFont(prompt_font)
+            
+            dc = wx.ScreenDC()
+            dc.SetFont(prompt_font)
+            prompt_char.SetSize(dc.GetTextExtent(prompt_char.GetLabel()))
+
             if int < len(input):
                 if input[int] != char:
                     prompt_char.SetForegroundColour((255, 0, 0))
