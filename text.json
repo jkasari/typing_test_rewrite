@@ -2,5 +2,8 @@
     "RESTART_BUTTON" : "Restart Game",
     "START_PROMPT" : "Go!",
     "START_BUTTON" : "Start Game",
-    "PROMPTS" : "1234567890`~!@#$%^*()-_=+[{}]:;'<>,./?|"
+    "PROMPTS" : "1234567890`~!@#$%^*()-_=+[{}]:;'<>,./?|",
+    "ROUND_ONE" : "Round #1",
+    "ROUND_TWO" : "Round #2",
+    "TEST_PROMPTS" : "ABC"
 }

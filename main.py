@@ -18,10 +18,10 @@ class MainFrame(wx.Frame):
     def __init__(self, parent: wx.App, title: str, pos: tuple, size: tuple):
         super().__init__(parent= parent, title=title, pos=pos, size=size)
         self.import_json_data()
+        self.init_data_members()
         self.init_panel(size)
         self.init_sizer()
         self.func_panel.init_actions()
-        self.prompt_string = " "
         self.action_control("START_GAME")
         self.frame_sizer.Layout()
 
@@ -30,24 +30,42 @@ class MainFrame(wx.Frame):
     
     # Displays the restart button and hides the rest of the widgets
     def restart_display(self):
-        self.prompt_string = " "
+        self.live_prompt = " "
         self.func_panel.update_prompt_text()
+        self.clear_input_box()
         self.func_panel.restart_button.Show()
         self.func_panel.input_box.Hide()
 
     # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
-        self.prompt_string = self.text_dict["START_PROMPT"]
+        if self._round == 1:
+            self.live_prompt = self.text_dict["ROUND_ONE"]
+        elif self._round == 2:
+            self.live_prompt = self.text_dict["ROUND_TWO"]
         self.func_panel.update_prompt_text()
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
 
     # Each time the text is matched, this updates the prompt.
     def generate_new_prompt(self):
-        self.func_panel.input_box.SetValue('')
-        temp = self.text_dict["PROMPTS"]
-        self.prompt_string = random.choice(temp)
+        self.clear_input_box()
+        self.live_prompt = random.choice(self._prompt_list)
         self.func_panel.update_prompt_text()
+
+    def finish_round(self):
+        self.action_control("RESTART_DISPLAY")
+
+    def clear_input_box(self):
+        self.func_panel.input_box.SetValue('')
+
+
+    def run_game(self):
+        if self._prompt_list:
+            self.generate_new_prompt()
+            if self._round == 1: 
+                self._prompt_list.remove(self.live_prompt)
+        else:
+            self.finish_round()
 
     # imports all the strings from the json file and puts them into a python dict object.
     def import_json_data(self):
@@ -64,7 +82,7 @@ class MainFrame(wx.Frame):
         elif action == "START_GAME":
             self.start_game()
         elif action == "TEXT_MATCH":
-            self.generate_new_prompt()
+            self.run_game()
         self.frame_sizer.Layout()
 
     # Creates the main sizer for the Frame.
@@ -75,6 +93,10 @@ class MainFrame(wx.Frame):
         self.Fit()
         self.Show()
 
+    def init_data_members(self):
+        self._round = 1
+        self.live_prompt = " "
+        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
         
 
 
@@ -129,21 +151,19 @@ class FuncPanel(wx.Panel):
         input = ""
         if self.input_box.GetValue():
             input = self.input_box.GetValue()
-        if input == self.parent.prompt_string:
+        if input == self.parent.live_prompt:
             self.parent.action_control("TEXT_MATCH")
         else:
             self.write_prompt_text(input)
 
     # Takes in a string for the prompt and for the input. It then fills the prompt sizer with color coded characters based on which ones match the input string.
     def write_prompt_text(self, input: str):
-        for int, char in enumerate(self.parent.prompt_string):
+        for int, char in enumerate(self.parent.live_prompt):
             prompt_font = wx.Font(pointSize= 60, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL)
             dc = wx.ScreenDC()
             dc.SetFont(prompt_font)
-            
             prompt_char = wx.StaticText(self, label=char, style=wx.ALIGN_CENTER, size=dc.GetTextExtent(char))
             prompt_char.SetFont(prompt_font)
-
             if int < len(input):
                 if input[int] != char:
                     prompt_char.SetForegroundColour((255, 0, 0))
