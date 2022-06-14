@@ -52,13 +52,15 @@ class MainFrame(wx.Frame):
         self.live_prompt = random.choice(self._prompt_list)
         self.func_panel.update_prompt_text()
 
+    # Handles the logic when a round is done. Adding up times for round one and finishing the game after round 2.
     def finish_round(self):
         self.action_control("RESTART_DISPLAY")
 
+    # Clears the input box 
     def clear_input_box(self):
         self.func_panel.input_box.SetValue('')
 
-
+    # Everytime there is a text match, this function gets called and manages what to do while the game is running.
     def run_game(self):
         if self._prompt_list:
             self.generate_new_prompt()
@@ -93,6 +95,7 @@ class MainFrame(wx.Frame):
         self.Fit()
         self.Show()
 
+    # Declares all the data members for the Frame.
     def init_data_members(self):
         self._round = 1
         self.live_prompt = " "
