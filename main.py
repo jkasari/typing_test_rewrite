@@ -35,6 +35,8 @@ class MainFrame(wx.Frame):
         self.clear_input_box()
         self.func_panel.restart_button.Show()
         self.func_panel.input_box.Hide()
+        self.reset_data_members()
+
 
     # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
@@ -62,10 +64,14 @@ class MainFrame(wx.Frame):
 
     # Everytime there is a text match, this function gets called and manages what to do while the game is running.
     def run_game(self):
+        time_diff = self.check_time()
+        if self._round == 1 and self.live_prompt != self.text_dict["ROUND_ONE"]: 
+            self._prompt_list.remove(self.live_prompt)
+            if (time_diff < 5):
+                self.response_times.append(time_diff)
+                print(time_diff)
         if self._prompt_list:
             self.generate_new_prompt()
-            if self._round == 1: 
-                self._prompt_list.remove(self.live_prompt)
         else:
             self.finish_round()
 
@@ -100,6 +106,21 @@ class MainFrame(wx.Frame):
         self._round = 1
         self.live_prompt = " "
         self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
+        self.start = 0
+        self.response_times = []
+    
+    def reset_data_members(self):
+        self._round = 1
+        self.live_prompt = " "
+        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
+        self.start = 0
+        self.response_times = []
+
+    # Retrun the difference between the current time and the self.start variable. 
+    def check_time(self):
+        time_diff = time.time()-self.start
+        self.start = time.time()
+        return time_diff
         
 
 
