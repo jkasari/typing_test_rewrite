@@ -54,6 +54,7 @@ class MainFrame(wx.Frame):
         self.live_prompt = random.choice(self._prompt_list)
         self.func_panel.update_prompt_text()
 
+    # calibrates the prompts for the second round
     def calibrate_round_two(self):
         big_list = []
         for char in self.response_times:
