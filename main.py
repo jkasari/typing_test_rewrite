@@ -54,9 +54,27 @@ class MainFrame(wx.Frame):
         self.live_prompt = random.choice(self._prompt_list)
         self.func_panel.update_prompt_text()
 
+    # calibrates the prompts for the second round
+    def calibrate_round_two(self):
+        big_list = []
+        for char in self.response_times:
+            for _ in range(int(self.response_times[char] * 4)):
+                big_list.append(char)
+        random.shuffle(big_list)
+        for i in range(5):
+            temp_str = ''.join(big_list[0: i+1])
+            print(temp_str)
+            self._prompt_list.append(temp_str)
+        random.shuffle(self._prompt_list)
+
+
     # Handles the logic when a round is done. Adding up times for round one and finishing the game after round 2.
     def finish_round(self):
-        self.action_control("RESTART_DISPLAY")
+        if self._round == 1:
+            self.calibrate_round_two()
+            self._round = 2
+        if self._round == 2:
+            self.action_control("RESTART_DISPLAY")
 
     # Clears the input box 
     def clear_input_box(self):
@@ -65,11 +83,10 @@ class MainFrame(wx.Frame):
     # Everytime there is a text match, this function gets called and manages what to do while the game is running.
     def run_game(self):
         time_diff = self.check_time()
+        print(time_diff)
         if self._round == 1 and self.live_prompt != self.text_dict["ROUND_ONE"]: 
             self._prompt_list.remove(self.live_prompt)
-            if (time_diff < 5):
-                self.response_times.append(time_diff)
-                print(time_diff)
+            self.response_times[self.live_prompt] = time_diff
         if self._prompt_list:
             self.generate_new_prompt()
         else:
@@ -107,7 +124,7 @@ class MainFrame(wx.Frame):
         self.live_prompt = " "
         self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
         self.start = 0
-        self.response_times = []
+        self.response_times = {}
     
     def reset_data_members(self):
         self._round = 1
