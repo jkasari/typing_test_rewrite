@@ -57,7 +57,7 @@ class MainFrame(wx.Frame):
     def calibrate_round_two(self):
         big_list = []
         for char in self.response_times:
-            for _ in range(int(self.response_times[char]) * 4):
+            for _ in range(int(self.response_times[char] * 4)):
                 big_list.append(char)
         random.shuffle(big_list)
         for i in range(5):
@@ -82,6 +82,7 @@ class MainFrame(wx.Frame):
     # Everytime there is a text match, this function gets called and manages what to do while the game is running.
     def run_game(self):
         time_diff = self.check_time()
+        print(time_diff)
         if self._round == 1 and self.live_prompt != self.text_dict["ROUND_ONE"]: 
             self._prompt_list.remove(self.live_prompt)
             self.response_times[self.live_prompt] = time_diff
