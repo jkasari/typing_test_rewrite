@@ -30,13 +30,15 @@ class MainFrame(wx.Frame):
     
     # Displays the restart button and hides the rest of the widgets
     def restart_display(self):
-        self.live_prompt = " "
+        self._time_limit *= self.calc_average_response()
+        print(self._time_limit)
+        self.live_prompt = str(round(self._time_limit, 4))
+        self.func_panel.final_score.Show()
         self.func_panel.update_prompt_text()
         self.clear_input_box()
         self.func_panel.restart_button.Show()
         self.func_panel.input_box.Hide()
-        self.reset_data_members()
-
+        self.init_data_members()
 
     # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
@@ -45,8 +47,10 @@ class MainFrame(wx.Frame):
         elif self._round == 2:
             self.live_prompt = self.text_dict["ROUND_TWO"]
         self.func_panel.update_prompt_text()
+        self.clear_input_box()
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
+        self.func_panel.final_score.Hide()
 
     # Each time the text is matched, this updates the prompt.
     def generate_new_prompt(self):
@@ -57,23 +61,30 @@ class MainFrame(wx.Frame):
     # calibrates the prompts for the second round
     def calibrate_round_two(self):
         big_list = []
+        self._time_limit = self.calc_average_response()
         for char in self.response_times:
             for _ in range(int(self.response_times[char] * 4)):
                 big_list.append(char)
-        random.shuffle(big_list)
         for i in range(5):
-            temp_str = ''.join(big_list[0: i+1])
+            random.shuffle(big_list)
+            temp_str = ''.join(big_list[0: i+2])
             print(temp_str)
             self._prompt_list.append(temp_str)
         random.shuffle(self._prompt_list)
-
+        
+    def calc_average_response(self):
+        temp = 1
+        for i in self.response_times:
+            temp += self.response_times[i]
+        return temp / len(self.response_times)
 
     # Handles the logic when a round is done. Adding up times for round one and finishing the game after round 2.
     def finish_round(self):
         if self._round == 1:
             self.calibrate_round_two()
             self._round = 2
-        if self._round == 2:
+            self.start_game()
+        else:
             self.action_control("RESTART_DISPLAY")
 
     # Clears the input box 
@@ -84,9 +95,13 @@ class MainFrame(wx.Frame):
     def run_game(self):
         time_diff = self.check_time()
         print(time_diff)
-        if self._round == 1 and self.live_prompt != self.text_dict["ROUND_ONE"]: 
-            self._prompt_list.remove(self.live_prompt)
-            self.response_times[self.live_prompt] = time_diff
+        if self.live_prompt != self.text_dict["ROUND_ONE"] and self.live_prompt != self.text_dict["ROUND_TWO"]: 
+            if time_diff < self._time_limit * len(self.live_prompt):
+                self.func_panel.turn_green()
+                self._prompt_list.remove(self.live_prompt)
+                self.response_times[self.live_prompt] = time_diff
+            else:
+                self.func_panel.turn_red()
         if self._prompt_list:
             self.generate_new_prompt()
         else:
@@ -122,16 +137,10 @@ class MainFrame(wx.Frame):
     def init_data_members(self):
         self._round = 1
         self.live_prompt = " "
-        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
+        self._prompt_list = list(self.text_dict["PROMPTS"])
         self.start = 0
         self.response_times = {}
-    
-    def reset_data_members(self):
-        self._round = 1
-        self.live_prompt = " "
-        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
-        self.start = 0
-        self.response_times = []
+        self._time_limit = 5
 
     # Retrun the difference between the current time and the self.start variable. 
     def check_time(self):
@@ -147,6 +156,7 @@ class FuncPanel(wx.Panel):
         self.parent = parent
         self.init_restart_button()
         self.init_input()
+        self.init_final_score()
         self.init_sizers()
         self.SetBackgroundColour("Green")
 
@@ -157,15 +167,21 @@ class FuncPanel(wx.Panel):
         self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], pos=(270, 370), size=(90, 30))
         self.restart_button.Hide()
 
+    def init_final_score(self):
+        self.final_score = wx.StaticText(self, label=self.parent.text_dict["FINAL_SCORE"], size=(100, 30))
+        self.final_score.Hide()
+
     #creats the input box.
     def init_input(self):
-        self.input_box = wx.TextCtrl(self, value="", size=(90, 30))
+        self.input_box = wx.TextCtrl(self, value="", size=(150, 30))
 
     # Inits the dong show that is the panel sizers. LOOK AT ALL OF THEM
     def init_sizers(self):
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.prompt_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.main_sizer.Add(0, 50, 0)
+        self.main_sizer.Add(0, 30, 0)
+        self.main_sizer.Add(self.final_score, 0, wx.ALIGN_CENTER)
+        self.main_sizer.Add(0, 20, 0)
         self.main_sizer.Add(self.prompt_sizer, 0, wx.ALIGN_CENTER)
         self.main_sizer.Add(0, 50, 0)
         self.main_sizer.Add(self.restart_button, 0, wx.ALIGN_CENTER)
@@ -215,6 +231,12 @@ class FuncPanel(wx.Panel):
         for i in reversed(range(len(self.prompt_sizer.GetChildren()))):
             self.prompt_sizer.Hide(i)
             self.prompt_sizer.Remove(i)
+
+    def turn_red(self):
+        self.SetBackgroundColour("RED")
+
+    def turn_green(self):
+        self.SetBackgroundColour("Green")
 
         
 
