@@ -33,12 +33,8 @@ class MainFrame(wx.Frame):
         self._time_limit *= self.calc_average_response()
         print(self._time_limit)
         self.live_prompt = str(round(self._time_limit, 4))
-        self.func_panel.final_score.Show()
-        self.func_panel.update_prompt_text()
-        self.clear_input_box()
-        self.func_panel.restart_button.Show()
-        self.func_panel.input_box.Hide()
         self.init_data_members()
+        self.func_panel.restart_display()
 
     # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
@@ -46,17 +42,12 @@ class MainFrame(wx.Frame):
             self.live_prompt = self.text_dict["ROUND_ONE"]
         elif self._round == 2:
             self.live_prompt = self.text_dict["ROUND_TWO"]
-        self.func_panel.update_prompt_text()
-        self.clear_input_box()
-        self.func_panel.restart_button.Hide()
-        self.func_panel.input_box.Show()
-        self.func_panel.final_score.Hide()
+        self.func_panel.start_game_display()
 
     # Each time the text is matched, this updates the prompt.
     def generate_new_prompt(self):
-        self.clear_input_box()
         self.live_prompt = random.choice(self._prompt_list)
-        self.func_panel.update_prompt_text()
+        self.func_panel.generate_new_prompt_display()
 
     # calibrates the prompts for the second round
     def calibrate_round_two(self):
@@ -86,10 +77,6 @@ class MainFrame(wx.Frame):
             self.start_game()
         else:
             self.action_control("RESTART_DISPLAY")
-
-    # Clears the input box 
-    def clear_input_box(self):
-        self.func_panel.input_box.SetValue('')
 
     # Everytime there is a text match, this function gets called and manages what to do while the game is running.
     def run_game(self):
@@ -137,7 +124,7 @@ class MainFrame(wx.Frame):
     def init_data_members(self):
         self._round = 1
         self.live_prompt = " "
-        self._prompt_list = list(self.text_dict["PROMPTS"])
+        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
         self.start = 0
         self.response_times = {}
         self._time_limit = 5
@@ -239,6 +226,27 @@ class FuncPanel(wx.Panel):
 
     def turn_green(self):
         self.SetBackgroundColour("Green")
+
+    # Adjust the displays for the game to start
+    def start_game_display(self):
+        self.update_prompt_text()
+        self.input_box.SetValue("")
+        self.restart_button.Hide()
+        self.input_box.Show()
+        self.final_score.Hide()
+        
+    # Sets the displays for the restart button and page
+    def restart_display(self):
+        self.final_score.Show()
+        self.input_box.SetValue("")
+        self.restart_button.Show()
+        self.input_box.Hide()
+        self.update_prompt_text()
+
+    # Adjust the displays needed to allow a new prompt to exist
+    def generate_new_prompt_display(self):
+        self.input_box.SetValue("")
+        self.update_prompt_text()
 
         
 
