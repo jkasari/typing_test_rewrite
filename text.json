@@ -5,5 +5,6 @@
     "PROMPTS" : "1234567890`~!@#$%^*()-_=+[{}]:;'<>,./?|",
     "ROUND_ONE" : "Round #1",
     "ROUND_TWO" : "Round #2",
-    "TEST_PROMPTS" : "ABC"
+    "TEST_PROMPTS" : "ABC",
+    "FINAL_SCORE" : "Your Final Score is..."
 }
