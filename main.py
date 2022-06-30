@@ -137,7 +137,7 @@ class MainFrame(wx.Frame):
     def init_data_members(self):
         self._round = 1
         self.live_prompt = " "
-        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
+        self._prompt_list = list(self.text_dict["PROMPTS"])
         self.start = 0
         self.response_times = {}
         self._time_limit = 5
