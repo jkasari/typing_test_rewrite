@@ -173,7 +173,9 @@ class FuncPanel(wx.Panel):
 
     #creats the input box.
     def init_input(self):
-        self.input_box = wx.TextCtrl(self, value="", size=(150, 30))
+        prompt_font = wx.Font(pointSize= 40, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_NORMAL)
+        self.input_box = wx.TextCtrl(self, value="", size=(180, 80))
+        self.input_box.SetFont(prompt_font)
 
     # Inits the dong show that is the panel sizers. LOOK AT ALL OF THEM
     def init_sizers(self):
@@ -233,7 +235,7 @@ class FuncPanel(wx.Panel):
             self.prompt_sizer.Remove(i)
 
     def turn_red(self):
-        self.SetBackgroundColour("RED")
+        self.SetBackgroundColour("Grey")
 
     def turn_green(self):
         self.SetBackgroundColour("Green")
