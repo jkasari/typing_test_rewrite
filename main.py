@@ -33,8 +33,8 @@ class MainFrame(wx.Frame):
         self._time_limit *= self.calc_average_response()
         print(self._time_limit)
         self.live_prompt = str(round(self._time_limit, 4))
-        self.init_data_members()
         self.func_panel.restart_display()
+        self.init_data_members()
 
     # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
