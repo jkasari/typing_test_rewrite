@@ -35,7 +35,7 @@ class MainFrame(wx.Frame):
         self.clear_input_box()
         self.func_panel.restart_button.Show()
         self.func_panel.input_box.Hide()
-        self.reset_data_members()
+        self.init_data_members()
 
 
     # This hides the restart button and starts the actual game by displaying the input box
@@ -45,6 +45,7 @@ class MainFrame(wx.Frame):
         elif self._round == 2:
             self.live_prompt = self.text_dict["ROUND_TWO"]
         self.func_panel.update_prompt_text()
+        self.clear_input_box()
         self.func_panel.restart_button.Hide()
         self.func_panel.input_box.Show()
 
@@ -60,9 +61,9 @@ class MainFrame(wx.Frame):
         for char in self.response_times:
             for _ in range(int(self.response_times[char] * 4)):
                 big_list.append(char)
-        random.shuffle(big_list)
         for i in range(5):
-            temp_str = ''.join(big_list[0: i+1])
+            random.shuffle(big_list)
+            temp_str = ''.join(big_list[0: i+2])
             print(temp_str)
             self._prompt_list.append(temp_str)
         random.shuffle(self._prompt_list)
@@ -73,7 +74,8 @@ class MainFrame(wx.Frame):
         if self._round == 1:
             self.calibrate_round_two()
             self._round = 2
-        if self._round == 2:
+            self.start_game()
+        else:
             self.action_control("RESTART_DISPLAY")
 
     # Clears the input box 
@@ -84,9 +86,12 @@ class MainFrame(wx.Frame):
     def run_game(self):
         time_diff = self.check_time()
         print(time_diff)
-        if self._round == 1 and self.live_prompt != self.text_dict["ROUND_ONE"]: 
-            self._prompt_list.remove(self.live_prompt)
-            self.response_times[self.live_prompt] = time_diff
+        if self.live_prompt != self.text_dict["ROUND_ONE"] and self.live_prompt != self.text_dict["ROUND_TWO"]: 
+            if time_diff < self._time_limit * len(self.live_prompt):
+                self._prompt_list.remove(self.live_prompt)
+                self.response_times[self.live_prompt] = time_diff
+            else:
+                pass
         if self._prompt_list:
             self.generate_new_prompt()
         else:
@@ -125,13 +130,7 @@ class MainFrame(wx.Frame):
         self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
         self.start = 0
         self.response_times = {}
-    
-    def reset_data_members(self):
-        self._round = 1
-        self.live_prompt = " "
-        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
-        self.start = 0
-        self.response_times = []
+        self._time_limit = 5
 
     # Retrun the difference between the current time and the self.start variable. 
     def check_time(self):
