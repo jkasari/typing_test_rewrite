@@ -43,9 +43,9 @@ class MainFrame(wx.Frame):
             temp_list = score_board.split(",")
         else:
             temp_list = []
-        temp_list.append(str(score))
+        temp_list.append(str(round(score, 4)))
         self.text_dict["SCORE_BOARD"] = ','.join(temp_list)
-        with open("text.json") as i:
+        with open("text.json", 'w') as i:
             json.dump(self.text_dict, i, indent=2)
 
     # This hides the restart button and starts the actual game by displaying the input box
@@ -162,6 +162,7 @@ class FuncPanel(wx.Panel):
         self.init_restart_button()
         self.init_input()
         self.init_final_score()
+        self.init_high_score()
         self.init_sizers()
         self.SetBackgroundColour("Green")
 
@@ -169,12 +170,16 @@ class FuncPanel(wx.Panel):
 
     #creates the actual restart button
     def init_restart_button(self):
-        self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], pos=(270, 370), size=(90, 30))
+        self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], size=(90, 30))
         self.restart_button.Hide()
 
     def init_final_score(self):
-        self.final_score = wx.StaticText(self, label=self.parent.text_dict["FINAL_SCORE"], size=(100, 30))
+        self.final_score = wx.StaticText(self, label=self.parent.text_dict["FINAL_SCORE"])
         self.final_score.Hide()
+
+    def init_high_score(self):
+        self.high_score = wx.StaticText(self, label = "")
+        self.high_score.Hide()
 
     #creats the input box.
     def init_input(self):
@@ -190,7 +195,9 @@ class FuncPanel(wx.Panel):
         self.main_sizer.Add(self.final_score, 0, wx.ALIGN_CENTER)
         self.main_sizer.Add(0, 20, 0)
         self.main_sizer.Add(self.prompt_sizer, 0, wx.ALIGN_CENTER)
-        self.main_sizer.Add(0, 50, 0)
+        self.main_sizer.Add(0, 30, 0)
+        self.main_sizer.Add(self.high_score, 0, wx.ALIGN_CENTER)
+        self.main_sizer.Add(0, 30, 0)
         self.main_sizer.Add(self.restart_button, 0, wx.ALIGN_CENTER)
         self.main_sizer.Add(self.input_box, 0, wx.ALIGN_CENTER)
         self.SetSizer(self.main_sizer)
@@ -250,12 +257,17 @@ class FuncPanel(wx.Panel):
         self.update_prompt_text()
         self.input_box.SetValue("")
         self.restart_button.Hide()
-        self.input_box.Show()
         self.final_score.Hide()
+        self.high_score.Hide()
+        self.input_box.Show()
         
     # Sets the displays for the restart button and page
     def restart_display(self):
+        temp_score_text = self.parent.text_dict["HIGH_SCORE"]
+        temp_high_score = min(self.parent.text_dict["SCORE_BOARD"].split(","))
+        self.high_score.SetLabel(f"{temp_score_text}{temp_high_score}")
         self.final_score.Show()
+        self.high_score.Show()
         self.input_box.SetValue("")
         self.restart_button.Show()
         self.input_box.Hide()

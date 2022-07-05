@@ -1,11 +1,12 @@
 {
-    "RESTART_BUTTON" : "Restart Game",
-    "START_PROMPT" : "Go!",
-    "START_BUTTON" : "Start Game",
-    "PROMPTS" : "1234567890`~!@#$%^*()-_=+[{}]:;'<>,./?|",
-    "ROUND_ONE" : "Round #1",
-    "ROUND_TWO" : "Round #2",
-    "TEST_PROMPTS" : "ABC",
-    "FINAL_SCORE" : "Your Final Score is...",
-    "SCORE_BOARD" : ""
+  "RESTART_BUTTON": "Restart Game",
+  "START_PROMPT": "Go!",
+  "START_BUTTON": "Start Game",
+  "PROMPTS": "1234567890`~!@#$%^*()-_=+[{}]:;'<>,./?|",
+  "ROUND_ONE": "Round #1",
+  "ROUND_TWO": "Round #2",
+  "TEST_PROMPTS": "ABC",
+  "FINAL_SCORE": "Your Final Score is...",
+  "HIGH_SCORE": "The previous best score is : ",
+  "SCORE_BOARD": "0.9816,0.6865,0.7637,0.6604,0.6351,0.7419,0.6127,0.7946,0.7617"
 }
