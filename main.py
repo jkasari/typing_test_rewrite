@@ -163,7 +163,7 @@ class FuncPanel(wx.Panel):
         self.parent = parent
         self.init_restart_button()
         self.init_input()
-        self.init_high_score()
+        self.init_final_score()
         self.init_sizers()
         self.SetBackgroundColour("Green")
 
@@ -174,9 +174,9 @@ class FuncPanel(wx.Panel):
         self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], size=(90, 30))
         self.restart_button.Hide()
 
-    def init_high_score(self):
-        self.high_score = wx.StaticText(self, label = "")
-        self.high_score.Hide()
+    def init_final_score(self):
+        self.final_score = wx.StaticText(self, label=self.parent.text_dict["FINAL_SCORE"], size=(100, 30))
+        self.final_score.Hide()
 
     #creats the input box.
     def init_input(self):
@@ -189,7 +189,6 @@ class FuncPanel(wx.Panel):
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.prompt_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.high_score_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.high_score_sizer.Hide()
         self.main_sizer.Add(0, 30, 0)
         self.main_sizer.Add(self.final_score, 0, wx.ALIGN_CENTER)
         self.main_sizer.Add(0, 20, 0)
@@ -217,10 +216,14 @@ class FuncPanel(wx.Panel):
     def update_high_score(self):
         if not self.high_score_sizer.IsEmpty():
             self.clear_high_score()
-        text_label = self.parent.text_dict("HIGH_SCORE")
-        score_label = min(self.parent.text_dict("SCORE_BOARD").spilt(','))
+        text_label = self.parent.text_dict["HIGH_SCORE"]
+        score_label = min(self.parent.text_dict["SCORE_BOARD"].split(','))
+        score_font = wx.Font(pointSize=70, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_BOLD)
+        dc = wx.ScreenDC()
+        dc.SetFont(score_font)
         text = wx.StaticText(self, label=text_label)
-        score = wx.StaticText(self, label=score_label)
+        score = wx.StaticText(self, label=score_label, size=dc.GetTextExtent(score_label))
+        score.SetFont(score_font)
         self.high_score_sizer.Add(text)
         self.high_score_sizer.Add(score)
 
@@ -269,19 +272,16 @@ class FuncPanel(wx.Panel):
     # Adjust the displays for the game to start
     def start_game_display(self):
         self.update_prompt_text()
+        self.clear_high_score()
         self.input_box.SetValue("")
         self.restart_button.Hide()
         self.final_score.Hide()
-        self.high_score_sizer.Hide()
         self.input_box.Show()
         
     # Sets the displays for the restart button and page
     def restart_display(self):
-        temp_score_text = self.parent.text_dict["HIGH_SCORE"]
-        temp_high_score = min(self.parent.text_dict["SCORE_BOARD"].split(","))
-        self.high_score.SetLabel(f"{temp_score_text}{temp_high_score}")
+        self.update_high_score()
         self.final_score.Show()
-        self.high_score.Show()
         self.input_box.SetValue("")
         self.restart_button.Show()
         self.input_box.Hide()
