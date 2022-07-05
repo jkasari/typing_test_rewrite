@@ -30,11 +30,25 @@ class MainFrame(wx.Frame):
     
     # Displays the restart button and hides the rest of the widgets
     def restart_display(self):
-        self._time_limit *= self.calc_average_response()
+        self._time_limit = (self._time_limit + self.calc_average_response()) / 2
         print(self._time_limit)
-        self.live_prompt = str(round(self._time_limit, 4))
+        self.update_score_board(self._time_limit)
+        self.live_prompt = str(round(self._time_limit, 4)) # Calc the final average of all the respinse times
         self.func_panel.restart_display()
         self.init_data_members()
+
+    def update_score_board(self, score: int):
+        score_board = self.text_dict["SCORE_BOARD"]
+        if score_board:
+            temp_list = score_board.split(",")
+        else:
+            temp_list = []
+        temp_list.append(str(round(score, 4)))
+        if len(temp_list) > 50:
+            temp_list.remove(max(temp_list))
+        self.text_dict["SCORE_BOARD"] = ','.join(temp_list)
+        with open("text.json", 'w') as i:
+            json.dump(self.text_dict, i, indent=2)
 
     # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
@@ -86,13 +100,19 @@ class MainFrame(wx.Frame):
             if time_diff < self._time_limit * len(self.live_prompt):
                 self.func_panel.turn_green()
                 self._prompt_list.remove(self.live_prompt)
-                self.response_times[self.live_prompt] = time_diff
+                self.count_response_time(time_diff)
             else:
                 self.func_panel.turn_red()
         if self._prompt_list:
             self.generate_new_prompt()
         else:
             self.finish_round()
+
+    def count_response_time(self, time_diff: int):
+        if self._round == 1:
+            self.response_times[self.live_prompt] = time_diff
+        else:
+            self.response_times[self.live_prompt] = time_diff / len(self.live_prompt)
 
     # imports all the strings from the json file and puts them into a python dict object.
     def import_json_data(self):
@@ -151,7 +171,7 @@ class FuncPanel(wx.Panel):
 
     #creates the actual restart button
     def init_restart_button(self):
-        self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], pos=(270, 370), size=(90, 30))
+        self.restart_button = wx.Button(self, label=self.parent.text_dict["RESTART_BUTTON"], size=(90, 30))
         self.restart_button.Hide()
 
     def init_final_score(self):
@@ -168,11 +188,14 @@ class FuncPanel(wx.Panel):
     def init_sizers(self):
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.prompt_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.high_score_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.main_sizer.Add(0, 30, 0)
         self.main_sizer.Add(self.final_score, 0, wx.ALIGN_CENTER)
         self.main_sizer.Add(0, 20, 0)
         self.main_sizer.Add(self.prompt_sizer, 0, wx.ALIGN_CENTER)
-        self.main_sizer.Add(0, 50, 0)
+        self.main_sizer.Add(0, 30, 0)
+        self.main_sizer.Add(self.high_score_sizer, 0, wx.ALIGN_CENTER)
+        self.main_sizer.Add(0, 30, 0)
         self.main_sizer.Add(self.restart_button, 0, wx.ALIGN_CENTER)
         self.main_sizer.Add(self.input_box, 0, wx.ALIGN_CENTER)
         self.SetSizer(self.main_sizer)
@@ -189,6 +212,25 @@ class FuncPanel(wx.Panel):
     # Tell action control to restart the app.
     def restart_pushed(self, e):
         self.parent.action_control("START_GAME")
+    
+    def update_high_score(self):
+        if not self.high_score_sizer.IsEmpty():
+            self.clear_high_score()
+        text_label = self.parent.text_dict["HIGH_SCORE"]
+        score_label = min(self.parent.text_dict["SCORE_BOARD"].split(','))
+        score_font = wx.Font(pointSize=70, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_BOLD)
+        dc = wx.ScreenDC()
+        dc.SetFont(score_font)
+        text = wx.StaticText(self, label=text_label)
+        score = wx.StaticText(self, label=score_label, size=dc.GetTextExtent(score_label))
+        score.SetFont(score_font)
+        self.high_score_sizer.Add(text)
+        self.high_score_sizer.Add(score)
+
+    def clear_high_score(self):
+        for i in reversed(range(len(self.high_score_sizer.GetChildren()))):
+            self.high_score_sizer.Hide(i)
+            self.high_score_sizer.Remove(i)
 
     # Takes a string and displays it as the prompt. Everytime it is called it checks the input box and either color codes the prompt or asks for it to be changed. 
     def update_prompt_text(self):
@@ -230,13 +272,15 @@ class FuncPanel(wx.Panel):
     # Adjust the displays for the game to start
     def start_game_display(self):
         self.update_prompt_text()
+        self.clear_high_score()
         self.input_box.SetValue("")
         self.restart_button.Hide()
-        self.input_box.Show()
         self.final_score.Hide()
+        self.input_box.Show()
         
     # Sets the displays for the restart button and page
     def restart_display(self):
+        self.update_high_score()
         self.final_score.Show()
         self.input_box.SetValue("")
         self.restart_button.Show()
