@@ -32,9 +32,21 @@ class MainFrame(wx.Frame):
     def restart_display(self):
         self._time_limit = (self._time_limit + self.calc_average_response()) / 2
         print(self._time_limit)
+        self.update_score_board(self._time_limit)
         self.live_prompt = str(round(self._time_limit, 4)) # Calc the final average of all the respinse times
         self.func_panel.restart_display()
         self.init_data_members()
+
+    def update_score_board(self, score: int):
+        score_board = self.text_dict["SCORE_BOARD"]
+        if score_board:
+            temp_list = score_board.split(",")
+        else:
+            temp_list = []
+        temp_list.append(str(score))
+        self.text_dict["SCORE_BOARD"] = ','.join(temp_list)
+        with open("text.json") as i:
+            json.dump(self.text_dict, i, indent=2)
 
     # This hides the restart button and starts the actual game by displaying the input box
     def start_game(self):
@@ -130,7 +142,7 @@ class MainFrame(wx.Frame):
     def init_data_members(self):
         self._round = 1
         self.live_prompt = " "
-        self._prompt_list = list(self.text_dict["PROMPTS"])
+        self._prompt_list = list(self.text_dict["TEST_PROMPTS"])
         self.start = 0
         self.response_times = {}
         self._time_limit = 5
