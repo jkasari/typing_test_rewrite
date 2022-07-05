@@ -30,9 +30,9 @@ class MainFrame(wx.Frame):
     
     # Displays the restart button and hides the rest of the widgets
     def restart_display(self):
-        self._time_limit *= self.calc_average_response()
+        self._time_limit = (self._time_limit + self.calc_average_response()) / 2
         print(self._time_limit)
-        self.live_prompt = str(round(self._time_limit, 4))
+        self.live_prompt = str(round(self._time_limit, 4)) # Calc the final average of all the respinse times
         self.func_panel.restart_display()
         self.init_data_members()
 
@@ -86,13 +86,19 @@ class MainFrame(wx.Frame):
             if time_diff < self._time_limit * len(self.live_prompt):
                 self.func_panel.turn_green()
                 self._prompt_list.remove(self.live_prompt)
-                self.response_times[self.live_prompt] = time_diff
+                self.count_response_time(time_diff)
             else:
                 self.func_panel.turn_red()
         if self._prompt_list:
             self.generate_new_prompt()
         else:
             self.finish_round()
+
+    def count_response_time(self, time_diff: int):
+        if self._round == 1:
+            self.response_times[self.live_prompt] = time_diff
+        else:
+            self.response_times[self.live_prompt] = time_diff / len(self.live_prompt)
 
     # imports all the strings from the json file and puts them into a python dict object.
     def import_json_data(self):
