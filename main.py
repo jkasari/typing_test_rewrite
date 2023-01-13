@@ -47,7 +47,6 @@ class MainFrame(wx.Frame):
         if new_score < record_score:
             self.text_dict["HIGH_SCORE_NUM"] = str(new_score)
         with open("text.json", 'w') as i:
-            print(f"HEY THIS IS THE OLD SCORE: {self.text_dict['HIGH_SCORE_NUM']}")
             json.dump(self.text_dict, i, indent=2)
 
     # This hides the restart button and starts the actual game by displaying the input box
