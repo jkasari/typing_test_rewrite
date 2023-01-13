@@ -33,20 +33,15 @@ class MainFrame(wx.Frame):
         self._time_limit = (self._time_limit + self.calc_average_response()) / 2
         print(self._time_limit)
         self.update_score_board(self._time_limit)
-        self.live_prompt = str(round(self._time_limit, 4)) # Calc the final average of all the respinse times
+        self.live_prompt = str(round(self._time_limit, 4)) # Calc the final average of all the response times
         self.func_panel.restart_display()
         self.init_data_members()
 
     def update_score_board(self, score: int):
-        score_board = self.text_dict["SCORE_BOARD"]
-        if score_board:
-            temp_list = score_board.split(",")
-        else:
-            temp_list = []
-        temp_list.append(str(round(score, 4)))
-        if len(temp_list) > 50:
-            temp_list.remove(max(temp_list))
-        self.text_dict["SCORE_BOARD"] = ','.join(temp_list)
+        record_score = int(self.text_dict["SCORE_BOARD"])
+        new_score = round(score, 4)
+        if new_score < record_score:
+            self.text_dict["SCORE_BOARD"] = str(new_score)
         with open("text.json", 'w') as i:
             json.dump(self.text_dict, i, indent=2)
 
