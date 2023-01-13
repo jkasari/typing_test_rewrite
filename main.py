@@ -42,7 +42,7 @@ class MainFrame(wx.Frame):
         if record_score:
             record_score = int(record_score)
         else:
-            record_score = 0.0
+            record_score = 100
         new_score = round(score, 4)
         if new_score < record_score:
             self.text_dict["HIGH_SCORE_NUM"] = str(new_score)
