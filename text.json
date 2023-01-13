@@ -2,11 +2,11 @@
   "RESTART_BUTTON": "Restart Game",
   "START_PROMPT": "Go!",
   "START_BUTTON": "Start Game",
-  "PROMPTS": "1234567890`~!@#$%^*()-_=+[{}]:;'<>,./?|",
+  "REAL_PROMPTS": "1234567890`~!@#$%^*()-_=+[{}]:;'<>,./?|",
   "ROUND_ONE": "Round #1",
   "ROUND_TWO": "Round #2",
-  "TEST_PROMPTS": "ABC",
+  "PROMPTS": "ABC",
   "FINAL_SCORE": "Your Final Score is...",
   "HIGH_SCORE": "The previous best score is : ",
-  "SCORE_BOARD": ""
+  "HIGH_SCORE_NUM": ""
 }

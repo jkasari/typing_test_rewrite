@@ -38,11 +38,16 @@ class MainFrame(wx.Frame):
         self.init_data_members()
 
     def update_score_board(self, score: int):
-        record_score = int(self.text_dict["SCORE_BOARD"])
+        record_score = self.text_dict["HIGH_SCORE_NUM"]
+        if record_score:
+            record_score = int(record_score)
+        else:
+            record_score = 0.0
         new_score = round(score, 4)
         if new_score < record_score:
-            self.text_dict["SCORE_BOARD"] = str(new_score)
+            self.text_dict["HIGH_SCORE_NUM"] = str(new_score)
         with open("text.json", 'w') as i:
+            print(f"HEY THIS IS THE OLD SCORE: {self.text_dict['HIGH_SCORE_NUM']}")
             json.dump(self.text_dict, i, indent=2)
 
     # This hides the restart button and starts the actual game by displaying the input box
@@ -212,7 +217,7 @@ class FuncPanel(wx.Panel):
         if not self.high_score_sizer.IsEmpty():
             self.clear_high_score()
         text_label = self.parent.text_dict["HIGH_SCORE"]
-        score_label = min(self.parent.text_dict["SCORE_BOARD"].split(','))
+        score_label = self.parent.text_dict["HIGH_SCORE_NUM"]
         score_font = wx.Font(pointSize=70, family=wx.FONTFAMILY_DEFAULT, style=wx.FONTSTYLE_MAX,  weight=wx.FONTWEIGHT_BOLD)
         dc = wx.ScreenDC()
         dc.SetFont(score_font)
